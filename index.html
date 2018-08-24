@@ -1,0 +1,131 @@
+ <!DOCTYPE html>
+ <html>
+	<head>
+		<title>XYZ Maps Hackathon: Germany Events and Alters</title>
+	    <script src="http://maphub.in.here.com/xyz-maps/latest/xyz-maps-common.min.js" type="text/javascript" charset="UTF-8" ></script>
+	    <script src="http://maphub.in.here.com/xyz-maps/latest/xyz-maps-core.min.js" type="text/javascript" charset="UTF-8" ></script>
+	    <script src="http://maphub.in.here.com/xyz-maps/latest/xyz-maps-display.min.js" type="text/javascript" charset="UTF-8" ></script>
+		<script src="app.js" type="text/javascript" charset="UTF-8" ></script>
+		<!--DIP app CSS -->
+		<link rel="stylesheet" href="app_styles.css" type="text/css" />
+	
+	</head>
+	<body>
+		 <div id="controlPanel">
+			
+			<p id="Tip">Please click on Search Events button to get events for Germany. The events include the below categories <br /> <br />
+						1. Concerts <br />
+						2. Expos <br />
+						3. Airport Delays <br />
+						4. Terror <br />
+						5. Sports <br />
+						6. Severe Weather <br />
+						7. Festivals <br />
+						8. Disasters <br />
+						9. Public Holidays <br />
+					Else enter the alpha 2 country code.
+					Refer Link : <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements" style="color:red">Country Code</a> 
+			</p>
+			<input id="customData" name="Data" type="text" placeholder="Country Code"/>
+			<pre><div id="info">Search Results</div></pre>
+			<button id="updateEvent" class="button button3" onclick=searchEvent(display)>Search Events</button>
+			<button id="resetSel" type="button" onclick=resetSelection()>Reset</button>
+			
+		</div>
+		<pre><div id="eventInfo"></div></pre>
+		<div id="map"></div>
+		
+		<script type="application/javascript">
+			//specify your credentials for image and link layers
+	      	var YOUR_ACCESS_TOKEN = "6KF1YmEouQWS3b5Dn6iuyQ";
+
+			// configure layers
+			var layers = [
+            	new here.xyz.maps.layers.TileLayer({
+        			name: 'Image Layer',
+                    min: 1,
+                    max: 20,
+                    provider: new here.xyz.maps.providers.ImageProvider({
+			        	name: 'Live Map',
+			             url : 'https://{SUBDOMAIN_INT_1_4}.mapcreator.tilehub.api.here.com/tilehub/wv_livemap_bc/png/map/256/{QUADKEY}?access_token='+YOUR_ACCESS_TOKEN
+			        })
+				}),
+				new here.xyz.maps.layers.TileLayer({
+				name: 'localLayer',
+		        min: 1,
+		        max: 20,
+		        provider: new here.xyz.maps.providers.LocalProvider({
+	                name:	'selector'
+				}),
+				style:{
+					styleGroups: {
+					    style: [
+						    {zIndex:1, type:"Circle", "stroke": "#FFFFF00", "fill": "Blue", radius: 12}
+						 ]
+					},
+					assign: function(feature){
+					    return "style";
+					}
+				}
+			})
+			]
+			// setup the Map Display
+			window.display = new  here.xyz.maps.Map( document.getElementById("map"), {
+			    zoomLevel : 16,
+			    center: {
+			        longitude: 8.68417, latitude: 50.11552
+			    },
+			    // add layers to display
+			    layers: layers
+			});
+
+
+/*###visiblesource*/
+// Create data layer with Space provider
+var myLayer = new here.xyz.maps.layers.TileLayer({
+	// Name of the layer
+	name: 'mySpaceLayer',
+
+	// Minimum zoom level
+    min: 14,
+
+    // Maximum zoom level
+    max: 20,
+
+    // Define provider for this layer
+    provider: new here.xyz.maps.providers.SpaceProvider ({
+    	// Name of the provider
+		name:  'SpaceProvider',
+
+		// Zoom level at which tiles are cached
+		level: 14,
+
+		// Space name
+		space: 'yLErJd50',
+
+		// User credential of the provider
+		credentials: {
+            access_token: YOUR_ACCESS_TOKEN
+		}
+	}),
+	 style:{
+    	styleGroups: {
+    		eventStyle: [
+	    		{zIndex: 2,type: 'Circle',stroke: '#000000',fill: '#228B22',radius: 30},
+	    	]
+    	},
+
+		assign: function(feature, zoomlevel){
+         	return "eventStyle";
+		}
+    }
+})
+
+
+// Add the layer to display
+display.addLayer(myLayer)
+/*visiblesource###*/
+display.addEventListener('pointerup', eventHandlerPtrUp);
+		</script>
+	</body>
+</html>
